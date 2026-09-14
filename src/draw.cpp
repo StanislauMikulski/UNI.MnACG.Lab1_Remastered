@@ -4,6 +4,8 @@
 #include <glm/ext.hpp>
 #include <cmath>
 #include <algorithm>
+#include <vector>
+#include <utility>
 
 #define RGB32(r, g, b) static_cast<uint32_t>((((static_cast<uint32_t>(b) << 8) | g) << 8) | r)
 
@@ -38,6 +40,7 @@ void draw(SDL_Surface *s, SDL_Renderer *renderer, SDL_Texture *texture)
   double f_max = 2.0 * 5 * M_PI;
   double a = std::min(SCREEN_WIDTH, SCREEN_HEIGHT) / (2.5 * f_max);
   double df = 0.005;
+  double alpha = M_PI * 10;
 
   int center_x = SCREEN_WIDTH / 2;
   int center_y = SCREEN_HEIGHT / 2;
@@ -45,18 +48,20 @@ void draw(SDL_Surface *s, SDL_Renderer *renderer, SDL_Texture *texture)
   int prev_x = center_x;
   int prev_y = center_y;
   bool first = true;
+  static double rot_angle = 0.0;
 
   for (double f = 0; f <= f_max; f += df) {
     SDL_Event ev;
-    while (SDL_PollEvent(&ev)) {
-      if (ev.type == SDL_QUIT) {
-        return;
-      }
-    }
+
 
     double p = a * f;
     int x = center_x + static_cast<int>(p * cos(f));
     int y = center_y - static_cast<int>(p * sin(f));
+
+    double dx = x - center_x;
+    double dy = y - center_y;
+    x = center_x + static_cast<int>(dx * cos(rot_angle) + dy * sin(rot_angle));
+    y = center_y - static_cast<int>(dx * sin(rot_angle) - dy * cos(rot_angle));
 
     if (x >= 0 && x < SCREEN_WIDTH && y >= 0 && y < SCREEN_HEIGHT) {
       if (!first) {
@@ -79,6 +84,23 @@ void draw(SDL_Surface *s, SDL_Renderer *renderer, SDL_Texture *texture)
       prev_x = x;
       prev_y = y;
       first = false;
+
+          while (SDL_PollEvent(&ev)) {
+      if (ev.type == SDL_QUIT) {
+        return;
+      } else if (ev.type == SDL_KEYDOWN){
+        switch (ev.key.keysym.sym){
+          case SDLK_a:
+            rot_angle += alpha * 0.1;
+            break;
+          case SDLK_b:
+          continue;
+
+        default:
+          break;
+        }
+      }
     }
+  }
   }
 }

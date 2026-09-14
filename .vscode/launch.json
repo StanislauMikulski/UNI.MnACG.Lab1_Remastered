@@ -1,0 +1,36 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Отладка SDL2 проекта",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/app",
+            "args": [],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}",
+            "environment": [],
+            "externalConsole": false,
+            "MIMode": "gdb",
+            "setupCommands": [
+                {
+                    "description": "Включить автоматическое форматирование для gdb",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                },
+                {
+                    "description": "Не останавливаться на сигналах SDL2 и pthread",
+                    "text": "handle SIG32 SIG33 pass nostop noprint",
+                    "ignoreFailures": true
+                },
+                {
+                    "description": "Non-stop mode: останавливать только поток с брейкпоинтом",
+                    "text": "set non-stop on",
+                    "ignoreFailures": true
+                }
+            ],
+            "preLaunchTask": "build-sdl2",
+            "miDebuggerPath": "/usr/bin/gdb"
+        }
+    ]
+}

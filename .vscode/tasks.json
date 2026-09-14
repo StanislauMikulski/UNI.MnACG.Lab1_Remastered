@@ -1,0 +1,31 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "type": "shell",
+            "label": "build-sdl2",
+            "command": "/usr/bin/g++-15",
+            "args": [
+                "-fdiagnostics-color=always",
+                "-O0",
+                "-g",
+                "${workspaceFolder}/src/main.cpp",
+                "${workspaceFolder}/src/draw.cpp",
+                "-o",
+                "${workspaceFolder}/app",
+                "-lm",
+                "-lSDL2"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "problemMatcher": [
+                "$gcc"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        }
+    ]
+}

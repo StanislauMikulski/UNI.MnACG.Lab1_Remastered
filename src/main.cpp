@@ -1,6 +1,6 @@
 #include "draw.h"
 
-#include <SDL.h>
+#include <SDL2/SDL.h>
 #include <stdio.h>
 #include <string>
 #include <cassert>
@@ -64,9 +64,10 @@ int main(int argc, char *argv[])
     if (NULL == gTexture) {
       printf("Failed to load media!\n");
     } else {
+      draw(loadedSurface, gRenderer, gTexture);
+
       bool quit = false;
       SDL_Event e;
-
       while (!quit) {
         while (SDL_PollEvent(&e) != 0) {
           if (SDL_QUIT == e.type) {
@@ -88,13 +89,6 @@ int main(int argc, char *argv[])
             }
           }
         }
-        SDL_RenderClear(gRenderer);
-
-        draw(loadedSurface);
-
-        SDL_UpdateTexture(gTexture, NULL, loadedSurface->pixels, loadedSurface->pitch);
-        SDL_RenderCopy(gRenderer, gTexture, NULL, NULL);
-        SDL_RenderPresent(gRenderer);
       }
     }
   }

@@ -2,14 +2,16 @@
 
 #include <glm/glm.hpp>
 #include <glm/ext.hpp>
+#include <cmath>
+#include <algorithm>
 
 #define RGB32(r, g, b) static_cast<uint32_t>((((static_cast<uint32_t>(b) << 8) | g) << 8) | r)
 
 void put_pixel32(SDL_Surface *surface, int x, int y, Uint32 pixel)
 {
   assert(NULL != surface);
-  assert(x < SCREEN_WIDTH);
-  assert(y < SCREEN_HEIGHT);
+  assert(x >= 0 && x < SCREEN_WIDTH);
+  assert(y >= 0 && y < SCREEN_HEIGHT);
 
   Uint32 *pixels = (Uint32 *)surface->pixels;
   pixels[(y * surface->w) + x] = pixel;
@@ -18,35 +20,66 @@ void put_pixel32(SDL_Surface *surface, int x, int y, Uint32 pixel)
 Uint32 get_pixel32(SDL_Surface *surface, int x, int y)
 {
   assert(NULL != surface);
-  assert(x < SCREEN_WIDTH);
-  assert(y < SCREEN_HEIGHT);
+  assert(x >= 0 && x < SCREEN_WIDTH);
+  assert(y >= 0 && y < SCREEN_HEIGHT);
 
   Uint32 *pixels = (Uint32 *)surface->pixels;
   return pixels[(y * surface->w) + x];
 }
 
-void draw(SDL_Surface *s)
+void draw(SDL_Surface *s, SDL_Renderer *renderer, SDL_Texture *texture)
 {
-  glm::vec4 Position = glm::vec4(glm::vec3(0.0f), 1.0f);
-  glm::mat4 Model = glm::translate(    glm::mat4(1.0f), glm::vec3(1.0f));
-  glm::vec4 Transformed = Model * Position;
+  SDL_FillRect(s, NULL, RGB32(0, 0, 0));
 
-  // Ваш код
-  // ...
-  for (int i = 30; i < 100; i++)
-    for (int j = 30; j < 100; j++)
-      put_pixel32(s, i, j, 0x00FF0000);
+  SDL_UpdateTexture(texture, NULL, s->pixels, s->pitch);
+  SDL_RenderClear(renderer);
+  SDL_RenderCopy(renderer, texture, NULL, NULL);
+  SDL_RenderPresent(renderer);
 
-  // Формат цвета в HEX коде:
-  //     0x00RRGGBB
-  //  где R: от 00 до FF
-  //      G: от 00 до FF
-  //      B: от 00 до FF
+  double f_max = 2.0 * 5 * M_PI;
+  double a = std::min(SCREEN_WIDTH, SCREEN_HEIGHT) / (2.5 * f_max);
+  double df = 0.005;
 
-  for (int i = 100; i < 200; i++)
-    for (int j = 100; j < 180; j++)
-      put_pixel32(s, i, j, RGB32(0, 255, 0));
+  int center_x = SCREEN_WIDTH / 2;
+  int center_y = SCREEN_HEIGHT / 2;
 
-  // или использу¤ макрос можно получить код цвета:
-  //   RGB32(0, 255, 0) эквивалентно записи 0x0000FF00
+  int prev_x = center_x;
+  int prev_y = center_y;
+  bool first = true;
+
+  for (double f = 0; f <= f_max; f += df) {
+    SDL_Event ev;
+    while (SDL_PollEvent(&ev)) {
+      if (ev.type == SDL_QUIT) {
+        return;
+      }
+    }
+
+    double p = a * f;
+    int x = center_x + static_cast<int>(p * cos(f));
+    int y = center_y - static_cast<int>(p * sin(f));
+
+    if (x >= 0 && x < SCREEN_WIDTH && y >= 0 && y < SCREEN_HEIGHT) {
+      if (!first) {
+        int steps = std::max(std::abs(x - prev_x), std::abs(y - prev_y));
+        for (int st = 0; st <= steps; ++st) {
+          int lerp_x = prev_x + (x - prev_x) * st / (steps == 0 ? 1 : steps);
+          int lerp_y = prev_y + (y - prev_y) * st / (steps == 0 ? 1 : steps);
+          if (lerp_x >= 0 && lerp_x < SCREEN_WIDTH && lerp_y >= 0 && lerp_y < SCREEN_HEIGHT) {
+            put_pixel32(s, lerp_x, lerp_y, RGB32(255, 255, 255));
+
+            SDL_UpdateTexture(texture, NULL, s->pixels, s->pitch);
+            SDL_RenderClear(renderer);
+            SDL_RenderCopy(renderer, texture, NULL, NULL);
+            SDL_RenderPresent(renderer);
+
+            SDL_Delay(1);
+          }
+        }
+      }
+      prev_x = x;
+      prev_y = y;
+      first = false;
+    }
+  }
 }

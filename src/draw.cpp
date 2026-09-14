@@ -30,7 +30,6 @@ Uint32 get_pixel32(SDL_Surface *surface, int x, int y)
 void draw(SDL_Surface *s, SDL_Renderer *renderer, SDL_Texture *texture)
 {
   SDL_FillRect(s, NULL, RGB32(0, 0, 0));
-
   SDL_UpdateTexture(texture, NULL, s->pixels, s->pitch);
   SDL_RenderClear(renderer);
   SDL_RenderCopy(renderer, texture, NULL, NULL);

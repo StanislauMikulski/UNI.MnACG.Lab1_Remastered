@@ -1,7 +1,4 @@
 ﻿#include "draw.h"
-
-#include <glm/glm.hpp>
-#include <glm/ext.hpp>
 #include <cmath>
 #include <algorithm>
 #include <vector>
@@ -102,7 +99,6 @@ void draw(SDL_Surface *s, SDL_Renderer *renderer, SDL_Texture *texture)
           SDL_RenderClear(renderer);
           SDL_RenderCopy(renderer, texture, NULL, NULL);
           SDL_RenderPresent(renderer);
-          SDL_Delay(1);
         }
       }
     }

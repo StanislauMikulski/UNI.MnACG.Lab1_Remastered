@@ -102,13 +102,6 @@ void draw(SDL_Surface *s, SDL_Renderer *renderer, SDL_Texture *texture)
         }
       }
     }
-
-    SDL_Event ev;
-    while (SDL_PollEvent(&ev)) {
-      if (ev.type == SDL_QUIT) {
-        return;
-      }
-    }
   }
 
   bool running = true;
@@ -121,15 +114,14 @@ void draw(SDL_Surface *s, SDL_Renderer *renderer, SDL_Texture *texture)
         switch (ev.key.keysym.sym) {
           case SDLK_a:
             rot_angle += alpha * 0.1;
-            draw_spiral(rot_angle);
             break;
           case SDLK_b:
             rot_angle -= alpha * 0.1;
-            draw_spiral(rot_angle);
             break;
           default:
             break;
         }
+        draw_spiral(rot_angle);
       }
     }
     SDL_Delay(16);

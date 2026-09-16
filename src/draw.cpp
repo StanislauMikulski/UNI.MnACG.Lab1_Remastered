@@ -45,9 +45,8 @@ void draw(SDL_Surface *s, SDL_Renderer *renderer, SDL_Texture *texture)
     points.push_back({x, y});
   }
 
-  // Функция для отрисовки всей спирали с заданным углом поворота
   auto draw_spiral = [&](double rot_angle) {
-    SDL_FillRect(s, NULL, RGB32(0, 0, 0)); // Очищаем поверхность
+    SDL_FillRect(s, NULL, RGB32(0, 0, 0));
 
     int prev_x = center_x;
     int prev_y = center_y;
@@ -57,12 +56,10 @@ void draw(SDL_Surface *s, SDL_Renderer *renderer, SDL_Texture *texture)
       double dx = pt.first - center_x;
       double dy = pt.second - center_y;
 
-      // Поворот точки
       int rx = center_x + static_cast<int>(dx * cos(rot_angle) + dy * sin(rot_angle));
       int ry = center_y - static_cast<int>(dx * sin(rot_angle) - dy * cos(rot_angle));
 
       if (!first) {
-        // Интерполяция между предыдущей и текущей точкой для плавности линии
         int steps = std::max(std::abs(rx - prev_x), std::abs(ry - prev_y));
         for (int st = 0; st <= steps; ++st) {
           int lerp_x = prev_x + (rx - prev_x) * st / (steps == 0 ? 1 : steps);
@@ -77,7 +74,6 @@ void draw(SDL_Surface *s, SDL_Renderer *renderer, SDL_Texture *texture)
       first = false;
     }
 
-    // Обновляем текстуру и отображаем её на экране
     SDL_UpdateTexture(texture, NULL, s->pixels, s->pitch);
     SDL_RenderClear(renderer);
     SDL_RenderCopy(renderer, texture, NULL, NULL);
@@ -86,7 +82,6 @@ void draw(SDL_Surface *s, SDL_Renderer *renderer, SDL_Texture *texture)
 
   double rot_angle = 0.0;
 
-  // Первоначальная отрисовка спирали без задержек
   draw_spiral(rot_angle);
 
   bool running = true;
@@ -109,10 +104,9 @@ void draw(SDL_Surface *s, SDL_Renderer *renderer, SDL_Texture *texture)
           default:
             break;
         }
-        // Перерисовываем спираль с новым углом
         draw_spiral(rot_angle);
       }
     }
-    SDL_Delay(16); // ~60 FPS
+    SDL_Delay(16);
   }
 }

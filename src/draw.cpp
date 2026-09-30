@@ -37,14 +37,6 @@ void draw(SDL_Surface *s, SDL_Renderer *renderer, SDL_Texture *texture)
   int center_x = SCREEN_WIDTH / 2;
   int center_y = SCREEN_HEIGHT / 2;
 
-  std::vector<std::pair<int, int>> points;
-  for (double f = 0; f <= f_max; f += df) {
-    double p = a * f;
-    int x = center_x + static_cast<int>(p * cos(f));
-    int y = center_y - static_cast<int>(p * sin(f));
-    points.push_back({x, y});
-  }
-
   auto draw_spiral = [&](double rot_angle) {
     SDL_FillRect(s, NULL, RGB32(0, 0, 0));
 
@@ -52,9 +44,13 @@ void draw(SDL_Surface *s, SDL_Renderer *renderer, SDL_Texture *texture)
     int prev_y = center_y;
     bool first = true;
 
-    for (const auto& pt : points) {
-      double dx = pt.first - center_x;
-      double dy = pt.second - center_y;
+    for (double f = 0; f <= f_max; f += df) {
+      double p = a * f;
+      int x = center_x + static_cast<int>(p * cos(f));
+      int y = center_y - static_cast<int>(p * sin(f));
+
+      double dx = x - center_x;
+      double dy = y - center_y;
 
       int rx = center_x + static_cast<int>(dx * cos(rot_angle) + dy * sin(rot_angle));
       int ry = center_y - static_cast<int>(dx * sin(rot_angle) - dy * cos(rot_angle));
@@ -87,9 +83,13 @@ void draw(SDL_Surface *s, SDL_Renderer *renderer, SDL_Texture *texture)
     int prev_y = center_y;
     bool first = true;
 
-    for (const auto& pt : points) {
-      double dx = pt.first - center_x;
-      double dy = pt.second - center_y;
+    for (double f = 0; f <= f_max; f += df) {
+      double p = a * f;
+      int x = center_x + static_cast<int>(p * cos(f));
+      int y = center_y - static_cast<int>(p * sin(f));
+
+      double dx = x - center_x;
+      double dy = y - center_y;
 
       int rx = center_x + static_cast<int>(dx * cos(rot_angle) + dy * sin(rot_angle));
       int ry = center_y - static_cast<int>(dx * sin(rot_angle) - dy * cos(rot_angle));

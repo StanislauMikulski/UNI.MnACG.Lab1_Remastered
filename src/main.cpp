@@ -64,7 +64,13 @@ int main(int argc, char *argv[])
     if (NULL == gTexture) {
       printf("Failed to load media!\n");
     } else {
-      draw(loadedSurface, gRenderer, gTexture);
+      double f_max = 2.0 * 5 * M_PI;
+      double a = std::min(SCREEN_WIDTH, SCREEN_HEIGHT) / (2.5 * f_max);
+      double df = 0.005;
+      double alpha = M_PI / 12;
+
+      double rot_angle = 0.0;
+      double current_f = 0.0;
 
       bool quit = false;
       SDL_Event e;
@@ -74,6 +80,20 @@ int main(int argc, char *argv[])
             quit = true;
           }
           if (SDL_KEYDOWN == e.type) {
+            switch (e.key.keysym.sym) {
+                case SDLK_a:
+                    rot_angle += alpha * 0.1;
+                    break;
+                case SDLK_b:
+                    rot_angle -= alpha * 0.1;
+                    break;
+                case SDLK_r:
+                    rot_angle = 0.0;
+                    current_f = 0.0;
+                    break;
+                default:
+                    break;
+            }
             switch (e.key.keysym.scancode) {
             case SDL_SCANCODE_KP_PLUS:
               printf("SDL_SCANCODE_KP_PLUS have been presssed\n");
@@ -89,6 +109,8 @@ int main(int argc, char *argv[])
             }
           }
         }
+
+        draw(loadedSurface, gRenderer, gTexture, current_f, f_max, df, a, rot_angle);
       }
     }
   }

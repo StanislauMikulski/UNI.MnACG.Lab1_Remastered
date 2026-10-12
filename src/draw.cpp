@@ -38,27 +38,26 @@ void draw(SDL_Surface *s, SDL_Renderer *renderer, SDL_Texture *texture)
     int center_y = SCREEN_HEIGHT / 2;
 
     double rot_angle = 0.0;
-    double current_f = 0.0; // Текущая длина (прогресс построения спирали)
+    double current_f = 0.0;
 
     bool running = true;
     SDL_Event ev;
 
     while (running) {
-        // 1. Проверяем нажатия клавиш в любой момент (и во время анимации тоже)
         while (SDL_PollEvent(&ev)) {
             if (ev.type == SDL_QUIT) {
                 running = false;
             } else if (ev.type == SDL_KEYDOWN) {
                 switch (ev.key.keysym.sym) {
                     case SDLK_a:
-                        rot_angle += alpha * 0.1; // Вращаем прямо во время построения
+                        rot_angle += alpha * 0.1;
                         break;
                     case SDLK_b:
-                        rot_angle -= alpha * 0.1; // Вращаем в другую сторону
+                        rot_angle -= alpha * 0.1;
                         break;
                     case SDLK_r:
                         rot_angle = 0.0;
-                        current_f = 0.0;          // Сбрасываем и запускаем анимацию заново
+                        current_f = 0.0;
                         break;
                     default:
                         break;
@@ -66,13 +65,11 @@ void draw(SDL_Surface *s, SDL_Renderer *renderer, SDL_Texture *texture)
             }
         }
 
-        // 2. Шаг анимации: постепенно увеличиваем длину спирали от кадра к кадру
         if (current_f <= f_max) {
-            current_f += df; // Можно увеличить множитель (например, += df * 2), если нужно быстрее
+            current_f += df;
             if (current_f > f_max) current_f = f_max;
         }
 
-        // 3. Отрисовка текущего состояния спирали (использует ваш put_pixel32)
         SDL_FillRect(s, NULL, RGB32(0, 0, 0));
 
         int prev_x = -1;
